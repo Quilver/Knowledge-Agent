@@ -1,5 +1,6 @@
 import os
 from typing import Optional, Dict, List
+from pathlib import Path
 from enum import Enum
 class documentTypes(Enum):
     markdown="markdown"
@@ -9,26 +10,22 @@ class documentTypes(Enum):
     folder="folder"
 
 def read_text_file(file_path: str) -> str:
-    if not os.path.exists(file_path):
-        return f"Error: File at {file_path} does not exist."
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, 'r') as f:
         return f.read()
 def chunk_text(text: str, max_size: int = 4000) -> List[str]:
     """Split text into chunks of max_size characters."""
     return [text[i:i + max_size] for i in range(0, len(text), max_size)]
 
 
-def read_file(path: Path) -> str:
-    ext = path.suffix.lower()
-
-    if ext in [".txt", ".md", ".py", ".cs", ".cpp", ".json", ".yaml", ".yml", ".html", ".css", ".js"]:
+def read_file(path: str, extension: str) -> str:
+    if extension in [".txt", ".md", ".py", ".cs", ".cpp", ".json", ".yaml", ".yml", ".html", ".css", ".js"]:
         return read_text_file(path)
 
-    #if ext == ".pdf":
-        return read_pdf(path)
+    #if extension == ".pdf":
+        #return read_pdf(path)
 
-    #if ext in [".png", ".jpg", ".jpeg", ".bmp", ".tiff"]:
-        return read_image(path)
+    #if extension in [".png", ".jpg", ".jpeg", ".bmp", ".tiff"]:
+        #return read_image(path)
 
     return "Could not read file"
 
@@ -41,19 +38,19 @@ def read_folder(path: Path) -> Dict[str, str]:
 
         # --- Process files ---
         for file in files:
-            if file.startswith("."):  # skip hidden files
+            if file.startswith(".") or file.startswith("__"):  # skip hidden files
                 continue
 
             file_path = Path(root) / file
             try:
-                results[str(file_path)] = read_file(file_path)
+                results[str(file_path)] = read_file(str(file_path), file_path.suffix.lower())
             except Exception as e:
                 results[str(file_path)] = f"ERROR: {e}"
 
     return results
 
 
-from pathlib import Path
+
 def read_path(path_str: str, chunk_size: int = 4000) -> Dict[str, List[str]]:
     """
     Read a file or folder and return chunked text.
@@ -68,7 +65,7 @@ def read_path(path_str: str, chunk_size: int = 4000) -> Dict[str, List[str]]:
     if path.is_dir():
         raw_results = read_folder(path)
     else:
-        raw_results = {str(path): read_file(path)}
+        raw_results = {str(path): read_file(path_str, path.suffix.lower())}
 
     # chunk everything
     chunked = {

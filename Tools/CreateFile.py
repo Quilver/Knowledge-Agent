@@ -4,10 +4,11 @@ from enum import Enum
 import yaml, os, re
 from datetime import datetime
 class PageTypes(Enum):
-    concept="concept"
-    entity="entity"
-    summary="summary"
-    synthesis="synthesis"
+    summaries="summaries"
+    UML = "UML"
+    interfaces = "interfaces"
+    datatypes = "datatypes"
+    functions = "functions"
 class Confindence(Enum):
     high="high"
     medium="medium"
@@ -74,7 +75,9 @@ WIKI_ROOT = FILE_ROOT+ "/LLM/wiki"
 
 def updateIndexAndLog(title:str, page_type:PageTypes, tags:List[str]):
     with open(WIKI_ROOT+"/index.md", 'a', encoding='utf-8') as f:
-        f.write(title+"\n")
+        f.write(f"[[{page_type.value}/{slugify(title)}]]:{tags} \n")
+    with open(WIKI_ROOT+"/log.md", 'a', encoding='utf-8') as f:
+        f.write(f"\n{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Created {page_type.value} page: {title} with tags {tags}")
 
 
 def slugify(title: str) -> str:
@@ -88,7 +91,7 @@ def CreateFile(title: str, page_type: PageTypes, tags: List[str], sources:List[s
 
     Args:
         title: name of the wiki page
-        page_type: concept | entity | summary | synthesis
+        page_type: type of the wiki page
         tags: list of tags
         sources: list of files that were used to create this file
         confidence: high | medium | low
@@ -117,5 +120,6 @@ def CreateFile(title: str, page_type: PageTypes, tags: List[str], sources:List[s
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(f"---\n{frontmatter}---\n\n{content}")
+    updateIndexAndLog(title, page_type, tags)
     return "Success"
 

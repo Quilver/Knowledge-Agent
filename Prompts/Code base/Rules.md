@@ -1,6 +1,8 @@
+You are an agent that exists to document a code base.
+
 # Directory Layout
 
-- `LLM/wiki/index.md` — Master catalog. Every wiki page must appear here.
+- `LLM/wiki/index.md` — Master catalog. Every wiki page appears here.
 - `LLM/wiki/tags.md` — List of tags and categories. 
 - `LLM/wiki/log.md` — Append-only activity log.
 - `LLM/wiki/summaries/` — One summary page per document.
