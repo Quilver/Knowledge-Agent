@@ -52,7 +52,7 @@ def CreateInterface(title: str, description: str, Functions: List[str], tags: Li
         "description": description,
         "functions": Functions,
         "tags": tags
-    }) 
+    }, sort_keys=False) 
     content = f"---\n{content}---\n"
     CreateFile(title, "interfaces", content, tags)
 def CreateDataTypes(title: str, description: str, attributes: List[str], tags: List[str]):
@@ -71,7 +71,7 @@ def CreateDataTypes(title: str, description: str, attributes: List[str], tags: L
         "description": description,
         "attributes": attributes,
         "tags": tags
-    })  
+    }, sort_keys=False)  
     content = f"---\n{content}---\n"
     CreateFile(title, "datatypes", content, tags)
 
@@ -96,7 +96,7 @@ def CreateFunction(title: str, description: str, interface: str, Inputs: List[st
         "inputs": Inputs,
         "outputs": outputs,
         "tags": tags,
-    })
+    }, sort_keys=False)
     content = f"---\n{content}---\n\n {examples}"
     CreateFile(title, "functions", content, tags)
 
@@ -110,29 +110,27 @@ def CreateUML(title: str, content: str, tags: List[str], sources: List[str]):
         sources: list of files that were used to create this file
         content: A mermaid UML diagram showing the relationships between data types, functions, and interfaces.
     """
-    content = yaml.dump({
+    header = yaml.dump({
         "title": title,
-        "content": content,
         "tags": tags,
         "sources": sources
-    })
-    content = f"---\n{content}---\n"
+    }, sort_keys=False)
+    content = f"---\n{header}---\n{content}"
     CreateFile(title, "uml", content, tags)
 def CreateSummary(title: str, content: str, tags: List[str], sources: List[str]):
     """
-    Creates a summary wiki page.
+    Creates a summary wiki page of a source file.
 
     Args:
         title: name of the wiki page
         tags: list of tags
-        sources: list of files that were used to create this file
+        sources: list of files that were used to create this file. The first source should be the file that is being summarized, and the rest are dependencies.
         content: summary of source file
     """
-    content = yaml.dump({
+    header = yaml.dump({
         "title": title,
-        "content": content,
         "tags": tags,
         "sources": sources
-    })
-    content = f"---\n{content}---\n"
+    }, sort_keys=False)
+    content = f"---\n{header}---\n{content}"
     CreateFile(title, "summaries", content, tags)

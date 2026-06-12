@@ -58,7 +58,6 @@ def read_path(path_str: str, chunk_size: int = 4000) -> Dict[str, List[str]]:
         { "filename": ["chunk1", "chunk2", ...] }
     """
     path = Path(path_str)
-
     if not path.exists():
         raise FileNotFoundError(f"Path not found: {path}")
 
@@ -74,7 +73,30 @@ def read_path(path_str: str, chunk_size: int = 4000) -> Dict[str, List[str]]:
     }
 
     return chunked
+def read_wiki_path(path_str: str, chunk_size: int = 4000) -> Dict[str, List[str]]:
+    """
+    Read a file or folder and return chunked text.
+    Returns:
+        { "filename": ["chunk1", "chunk2", ...] }
+    """
+    FILE_ROOT = "E:/Obsidian/LLM Guide"
+    path = Path(FILE_ROOT + "/" + path_str)
+    print("reading in "+str(path))
+    if not path.exists():
+        return {str(path): [f"ERROR: Path not found: {str(path)}"]}    
 
+    if path.is_dir():
+        raw_results = read_folder(path)
+    else:
+        raw_results = {str(path): read_file(str(path), path.suffix.lower())}
+
+    # chunk everything
+    chunked = {
+        filename: chunk_text(content, chunk_size)
+        for filename, content in raw_results.items()
+    }
+
+    return chunked
 '''
 import os
 import fnmatch
